@@ -73,8 +73,7 @@ export interface FullInterpretation {
   generatedInterpretation: string | null;
 }
 
-// Sample data for testing
-export const sampleThresholds: InterpretationThresholds = {
+export const DEFAULT_THRESHOLDS: InterpretationThresholds = {
   letterIdentification: { mastery: 50, developing: 30, emerging: 0 },
   phonemeAwareness: { mastery: 80, developing: 60, emerging: 0 },
   readingFluency: { mastery: 45, developing: 25, emerging: 0 },
@@ -86,80 +85,4 @@ export const sampleThresholds: InterpretationThresholds = {
   subtraction: { mastery: 80, developing: 60, emerging: 0 },
 };
 
-export const sampleStudents: Student[] = [
-  { id: '001', name: 'Kofi Mensah', grade: 'CP1', age: 6, gender: 'M' },
-  { id: '002', name: 'Ama Serwaa', grade: 'CP1', age: 7, gender: 'F' },
-  { id: '003', name: 'Kwame Adu', grade: 'CP2', age: 7, gender: 'M' },
-  { id: '004', name: 'Abena Poku', grade: 'CP2', age: 8, gender: 'F' },
-];
-
-export const sampleAssessments: AssessmentData[] = [
-  {
-    student: sampleStudents[0],
-    date: '2023-10-15',
-    egra: {
-      letterIdentification: 35,
-      phonemeAwareness: 65,
-      readingFluency: 28,
-      readingComprehension: 70,
-    },
-    egma: {
-      numberIdentification: 30,
-      quantityDiscrimination: 75,
-      missingNumber: 60,
-      addition: 80,
-      subtraction: 65,
-    },
-  },
-  {
-    student: sampleStudents[1],
-    date: '2023-10-15',
-    egra: {
-      letterIdentification: 25,
-      phonemeAwareness: 55,
-      readingFluency: 18,
-      readingComprehension: 50,
-    },
-    egma: {
-      numberIdentification: 25,
-      quantityDiscrimination: 60,
-      missingNumber: 50,
-      addition: 65,
-      subtraction: 45,
-    },
-  },
-  {
-    student: sampleStudents[2],
-    date: '2023-10-16',
-    egra: {
-      letterIdentification: 55,
-      phonemeAwareness: 85,
-      readingFluency: 48,
-      readingComprehension: 85,
-    },
-    egma: {
-      numberIdentification: 45,
-      quantityDiscrimination: 90,
-      missingNumber: 85,
-      addition: 95,
-      subtraction: 85,
-    },
-  },
-  {
-    student: sampleStudents[3],
-    date: '2023-10-16',
-    egra: {
-      letterIdentification: 40,
-      phonemeAwareness: 75,
-      readingFluency: 35,
-      readingComprehension: 75,
-    },
-    egma: {
-      numberIdentification: 35,
-      quantityDiscrimination: 80,
-      missingNumber: 70,
-      addition: 85,
-      subtraction: 70,
-    },
-  },
-];
+export type Language = 'fr' | 'en';

@@ -1,6 +1,6 @@
 
 import { createContext, useContext, useState, ReactNode } from "react";
-import { AssessmentData, sampleAssessments, Student, sampleStudents } from "@/types";
+import { AssessmentData, Student } from "@/types";
 import { toast } from "@/hooks/use-toast";
 
 interface DataContextType {
@@ -15,8 +15,8 @@ interface DataContextType {
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export const DataProvider = ({ children }: { children: ReactNode }) => {
-  const [students, setStudents] = useState<Student[]>(sampleStudents);
-  const [assessments, setAssessments] = useState<AssessmentData[]>(sampleAssessments);
+  const [students, setStudents] = useState<Student[]>([]);
+  const [assessments, setAssessments] = useState<AssessmentData[]>([]);
 
   const addStudents = (newStudents: Student[]) => {
     // Filter out duplicates by ID
@@ -58,8 +58,8 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const resetData = () => {
-    setStudents(sampleStudents);
-    setAssessments(sampleAssessments);
+    setStudents([]);
+    setAssessments([]);
     toast({
       title: "Données réinitialisées",
       description: "Toutes les données ont été réinitialisées."

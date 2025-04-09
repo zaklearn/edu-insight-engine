@@ -1,66 +1,107 @@
 
-import { Link } from "react-router-dom";
-import { FileSpreadsheet, Users, FileText, BarChart4 } from "lucide-react";
+import { PropsWithChildren } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { BookOpen, BarChart3, Users, FileText, Upload, Menu, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useMediaQuery } from "@/hooks/use-mobile";
+import { useState } from "react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import LanguageSwitcher from "./LanguageSwitcher";
 
-interface LayoutProps {
-  children: React.ReactNode;
+interface NavItemProps {
+  href: string;
+  icon: JSX.Element;
+  text: string;
+  isActive: boolean;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const NavItem = ({ href, icon, text, isActive }: NavItemProps) => (
+  <Link to={href}>
+    <Button 
+      variant={isActive ? "default" : "ghost"} 
+      className="w-full justify-start mb-1"
+    >
+      {icon}
+      <span className="ml-2">{text}</span>
+    </Button>
+  </Link>
+);
+
+const Layout = ({ children }: PropsWithChildren) => {
+  const location = useLocation();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  const { t } = useLanguage();
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const navItems = [
+    { href: "/", icon: <BarChart3 className="h-5 w-5" />, text: t("dashboard") },
+    { href: "/students", icon: <Users className="h-5 w-5" />, text: t("students") },
+    { href: "/assessments", icon: <BookOpen className="h-5 w-5" />, text: t("assessments") },
+    { href: "/reports", icon: <FileText className="h-5 w-5" />, text: t("reports") },
+    { href: "/data-upload", icon: <Upload className="h-5 w-5" />, text: t("dataUpload") },
+  ];
+
+  const showSidebar = !isMobile || mobileMenuOpen;
+
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="bg-primary text-white p-4">
-        <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold">EGRA / EGMA Analytics</h1>
-        </div>
-      </header>
-      <div className="flex flex-1 overflow-hidden">
-        <aside className="w-64 bg-gray-100 p-4 hidden md:block">
-          <nav className="space-y-2">
-            <Link
-              to="/"
-              className="flex items-center gap-2 p-2 rounded hover:bg-gray-200"
-            >
-              <BarChart4 size={20} />
-              <span>Tableau de Bord</span>
-            </Link>
-            <Link
-              to="/students"
-              className="flex items-center gap-2 p-2 rounded hover:bg-gray-200"
-            >
-              <Users size={20} />
-              <span>Étudiants</span>
-            </Link>
-            <Link
-              to="/assessments"
-              className="flex items-center gap-2 p-2 rounded hover:bg-gray-200"
-            >
-              <FileText size={20} />
-              <span>Évaluations</span>
-            </Link>
-            <Link
-              to="/reports"
-              className="flex items-center gap-2 p-2 rounded hover:bg-gray-200"
-            >
-              <BarChart4 size={20} />
-              <span>Rapports</span>
-            </Link>
-            <Link
-              to="/data-upload"
-              className="flex items-center gap-2 p-2 rounded hover:bg-gray-200"
-            >
-              <FileSpreadsheet size={20} />
-              <span>Importation de Données</span>
-            </Link>
+    <div className="flex min-h-screen bg-gray-50">
+      {/* Mobile Menu Toggle */}
+      {isMobile && (
+        <button 
+          onClick={toggleMobileMenu}
+          className="fixed z-50 top-4 left-4 p-2 bg-white rounded-md shadow-md"
+        >
+          {mobileMenuOpen ? (
+            <X className="h-6 w-6" />
+          ) : (
+            <Menu className="h-6 w-6" />
+          )}
+        </button>
+      )}
+      
+      {/* Sidebar */}
+      {showSidebar && (
+        <div 
+          className={`
+            ${isMobile ? 'fixed inset-0 z-40 bg-white/95' : 'w-64'} 
+            p-4 flex flex-col
+          `}
+        >
+          <div className="flex items-center justify-between mb-8">
+            <h1 className="text-xl font-bold text-gray-800">EGRA/EGMA</h1>
+            <LanguageSwitcher />
+          </div>
+          
+          <nav className="space-y-1 flex-1">
+            {navItems.map((item) => (
+              <NavItem
+                key={item.href}
+                href={item.href}
+                icon={item.icon}
+                text={item.text}
+                isActive={location.pathname === item.href}
+              />
+            ))}
           </nav>
-        </aside>
-        <main className="flex-1 p-6 overflow-auto">
-          <div className="container mx-auto">{children}</div>
-        </main>
-      </div>
-      <footer className="bg-gray-100 p-4 text-center text-gray-600 text-sm">
-        EGRA/EGMA Analytics System © {new Date().getFullYear()}
-      </footer>
+          
+          <div className="pt-4 border-t">
+            <p className="text-xs text-gray-500">
+              v1.0.0 © 2025 EGRA/EGMA
+            </p>
+          </div>
+        </div>
+      )}
+      
+      {/* Main Content */}
+      <main className={`flex-1 p-6 ${isMobile ? '' : 'ml-64'}`}>
+        <div className="max-w-6xl mx-auto">
+          {children}
+        </div>
+      </main>
     </div>
   );
 };
