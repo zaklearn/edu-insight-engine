@@ -3,7 +3,7 @@ import { PropsWithChildren } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { BookOpen, BarChart3, Users, FileText, Upload, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useMediaQuery } from "@/hooks/use-mobile";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import LanguageSwitcher from "./LanguageSwitcher";
@@ -30,7 +30,7 @@ const NavItem = ({ href, icon, text, isActive }: NavItemProps) => (
 const Layout = ({ children }: PropsWithChildren) => {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const isMobile = useMediaQuery("(max-width: 768px)");
+  const isMobile = useIsMobile();
   const { t } = useLanguage();
 
   const toggleMobileMenu = () => {
