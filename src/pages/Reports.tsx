@@ -1,11 +1,31 @@
-
+import { Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useData } from "@/contexts/DataContext";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from "recharts";
+import { Button } from "@/components/ui/button";
+import { Info } from "lucide-react";
 
 const Reports = () => {
   const { assessments, students } = useData();
+  
+  // If no data is uploaded, show upload prompt
+  if (assessments.length === 0 || students.length === 0) {
+    return (
+      <Layout>
+        <div className="flex flex-col items-center justify-center min-h-[600px] text-center space-y-6 p-6">
+          <Info className="h-16 w-16 text-gray-400" />
+          <h1 className="text-3xl font-bold text-gray-700">Aucun rapport disponible</h1>
+          <p className="text-gray-500 max-w-md">
+            Importez vos données d'évaluation pour générer des rapports détaillés.
+          </p>
+          <Link to="/data-upload">
+            <Button>Importer des données</Button>
+          </Link>
+        </div>
+      </Layout>
+    );
+  }
   
   // Calculate average scores by grade
   const calculateGradeAverages = () => {

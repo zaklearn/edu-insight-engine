@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { BookOpen, Calculator, AlertCircle, Info } from "lucide-react";
 import { useData } from "@/contexts/DataContext";
+import { Link } from "react-router-dom";
 
 interface ChartData {
   name: string;
@@ -55,6 +56,22 @@ const Dashboard = () => {
   const { students, assessments } = useData();
   const [selectedClass, setSelectedClass] = useState<string>("all");
   
+  // If no data is uploaded, show upload prompt
+  if (students.length === 0 || assessments.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[600px] text-center space-y-6 p-6">
+        <Info className="h-16 w-16 text-gray-400" />
+        <h2 className="text-2xl font-bold text-gray-700">Aucune donnée disponible</h2>
+        <p className="text-gray-500 max-w-md">
+          Commencez par importer vos données d'évaluation pour visualiser le tableau de bord.
+        </p>
+        <Link to="/data-upload">
+          <Button>Importer des données</Button>
+        </Link>
+      </div>
+    );
+  }
+
   // Get unique grades
   const grades = Array.from(new Set(students.map(s => s.grade)));
   
