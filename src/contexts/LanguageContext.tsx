@@ -1,137 +1,188 @@
+import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-import { createContext, useContext, useState, ReactNode } from "react";
-import { Language } from "@/types";
-
-interface LanguageContextType {
-  language: Language;
-  setLanguage: (lang: Language) => void;
-  translations: Record<string, Record<Language, string>>;
+type LanguageContextType = {
+  language: 'en' | 'fr';
+  setLanguage: (lang: 'en' | 'fr') => void;
   t: (key: string) => string;
-}
+};
 
-const translations: Record<string, Record<Language, string>> = {
-  // Navigation
-  "dashboard": { fr: "Tableau de Bord", en: "Dashboard" },
-  "students": { fr: "Élèves", en: "Students" },
-  "assessment": { fr: "Évaluation", en: "Assessment" },
-  "assessments": { fr: "Évaluations", en: "Assessments" },
-  "reports": { fr: "Rapports", en: "Reports" },
-  "dataUpload": { fr: "Importation de Données", en: "Data Upload" },
-  
-  // Common
-  "noDataAvailable": { fr: "Aucune donnée disponible", en: "No data available" },
-  "importData": { fr: "Importer des données", en: "Import data" },
-  "class": { fr: "Classe", en: "Class" },
-  "allClasses": { fr: "Toutes les classes", en: "All classes" },
-  "exportData": { fr: "Exporter les données", en: "Export data" },
-  "name": { fr: "Nom", en: "Name" },
-  "grade": { fr: "Classe", en: "Grade" },
-  "age": { fr: "Âge", en: "Age" },
-  "gender": { fr: "Genre", en: "Gender" },
-  "actions": { fr: "Actions", en: "Actions" },
-  "boy": { fr: "Garçon", en: "Boy" },
-  "girl": { fr: "Fille", en: "Girl" },
-  "id": { fr: "ID", en: "ID" },
-  "years": { fr: "ans", en: "years" },
-  "search": { fr: "Rechercher", en: "Search" },
-  "searchStudent": { fr: "Rechercher un élève...", en: "Search for a student..." },
-  "addStudent": { fr: "Ajouter un élève", en: "Add student" },
-  "showing": { fr: "Affichage de", en: "Showing" },
-  "studentsOf": { fr: "élèves sur", en: "students of" },
-  "previous": { fr: "Précédent", en: "Previous" },
-  "next": { fr: "Suivant", en: "Next" },
-  
-  // Dashboard
-  "performanceOverview": { fr: "Vue d'ensemble des performances EGRA/EGMA", en: "EGRA/EGMA Performance Overview" },
-  "egraPerformance": { fr: "Performances EGRA", en: "EGRA Performance" },
-  "egmaPerformance": { fr: "Performances EGMA", en: "EGMA Performance" },
-  "globalAverage": { fr: "Moyenne globale", en: "Global average" },
-  "students": { fr: "Élèves", en: "Students" },
-  "totalStudents": { fr: "Nombre total d'élèves", en: "Total number of students" },
-  "studentsIn": { fr: "Élèves en", en: "Students in" },
-  "performanceByClass": { fr: "Performance par classe", en: "Performance by class" },
-  "studentDistribution": { fr: "Distribution des élèves", en: "Student distribution" },
-  "egraEgmaComparison": { fr: "Comparaison EGRA/EGMA par classe", en: "EGRA/EGMA Comparison by class" },
-  "studentsPerClass": { fr: "Nombre d'élèves par classe", en: "Number of students per class" },
-  "watchList": { fr: "À Surveiller", en: "Watch List" },
-  "needsAttention": { fr: "Nécessite un suivi personnalisé", en: "Needs personalized follow-up" },
-  "viewFullAssessment": { fr: "Voir l'évaluation complète", en: "View full assessment" },
-  "noStudentsNeedingAttention": { fr: "Aucun élève nécessitant une attention particulière", en: "No students requiring special attention" },
-  "recommendedActions": { fr: "Actions Recommandées", en: "Recommended Actions" },
-  "readingWorkshop": { fr: "Atelier de Lecture", en: "Reading Workshop" },
-  "readingWorkshopDesc": { fr: "Organisez un atelier concentré sur la fluidité de lecture pour les classes CP1 et CP2.", en: "Organize a workshop focused on reading fluency for CP1 and CP2 classes." },
-  "plan": { fr: "Planifier", en: "Plan" },
-  "mathResources": { fr: "Ressources Mathématiques", en: "Math Resources" },
-  "mathResourcesDesc": { fr: "Procurez-vous du matériel manipulatif supplémentaire pour les exercices de calcul.", en: "Get additional manipulative materials for calculation exercises." },
-  "explore": { fr: "Explorer", en: "Explore" },
-  "teacherTraining": { fr: "Formation Enseignants", en: "Teacher Training" },
-  "teacherTrainingDesc": { fr: "Formation sur l'interprétation des résultats EGRA/EGMA et les interventions ciblées.", en: "Training on interpreting EGRA/EGMA results and targeted interventions." },
-  "learnMore": { fr: "En savoir plus", en: "Learn more" },
-  
-  // Assessment
-  "selectAssessment": { fr: "Sélectionner une évaluation", en: "Select an assessment" },
-  "chooseAssessment": { fr: "Choisir une évaluation", en: "Choose an assessment" },
-  "noAssessmentAvailable": { fr: "Aucune évaluation disponible. Veuillez importer des données.", en: "No assessment available. Please import data." },
-  
-  // Reports
-  "averagePerformanceByClass": { fr: "Performance moyenne par classe", en: "Average performance by class" },
-  "summary": { fr: "Résumé", en: "Summary" },
-  "totalStudentsCount": { fr: "Nombre total d'élèves", en: "Total number of students" },
-  "totalAssessmentsCount": { fr: "Nombre total d'évaluations", en: "Total number of assessments" },
-  "classCount": { fr: "Nombre de classes", en: "Number of classes" },
-  
-  // Data Upload
-  "uploadExcelFile": { fr: "Télécharger un fichier Excel", en: "Upload Excel file" },
-  "excelFile": { fr: "Fichier Excel", en: "Excel file" },
-  "dataPreview": { fr: "Aperçu des données", en: "Data preview" },
-  "columnMappings": { fr: "Mappages des colonnes", en: "Column mappings" },
-  "studentName": { fr: "Nom de l'élève", en: "Student name" },
-  "level": { fr: "Niveau", en: "Level" },
-  "selectColumn": { fr: "Sélectionner une colonne", en: "Select a column" },
-  "reading": { fr: "EGRA - Lecture", en: "EGRA - Reading" },
-  "letterIdentification": { fr: "Identification des lettres", en: "Letter identification" },
-  "phonemeAwareness": { fr: "Conscience phonémique", en: "Phoneme awareness" },
-  "readingFluency": { fr: "Fluidité de lecture", en: "Reading fluency" },
-  "readingComprehension": { fr: "Compréhension de lecture", en: "Reading comprehension" },
-  "notMapped": { fr: "Non mappé", en: "Not mapped" },
-  "mathematics": { fr: "EGMA - Mathématiques", en: "EGMA - Mathematics" },
-  "numberIdentification": { fr: "Identification des nombres", en: "Number identification" },
-  "quantityDiscrimination": { fr: "Discrimination quantitative", en: "Quantity discrimination" },
-  "missingNumber": { fr: "Nombre manquant", en: "Missing number" },
-  "addition": { fr: "Addition", en: "Addition" },
-  "subtraction": { fr: "Soustraction", en: "Subtraction" },
-  "processData": { fr: "Traiter les données", en: "Process data" },
-  "reset": { fr: "Réinitialiser", en: "Reset" },
-  "processSummary": { fr: "Résumé du traitement", en: "Processing summary" },
-  "recordsGenerated": { fr: "enregistrements ont été générés et sont prêts à être utilisés.", en: "records have been generated and are ready to be used." },
-  "saveToApp": { fr: "Enregistrer les données dans l'application", en: "Save data to application" },
+const translations = {
+  en: {
+    dashboard: 'Dashboard',
+    students: 'Students',
+    assessments: 'Assessments',
+    reports: 'Reports',
+    dataUpload: 'Data Upload',
+    welcome: 'Welcome to EGRA/EGMA Dashboard',
+    recentAssessments: 'Recent Assessments',
+    viewAll: 'View All',
+    studentPerformance: 'Student Performance',
+    readingMetrics: 'Reading Metrics',
+    mathMetrics: 'Math Metrics',
+    letterIdentification: 'Letter Identification',
+    phonemeAwareness: 'Phoneme Awareness',
+    readingFluency: 'Reading Fluency',
+    readingComprehension: 'Reading Comprehension',
+    numberIdentification: 'Number Identification',
+    quantityDiscrimination: 'Quantity Discrimination',
+    missingNumber: 'Missing Number',
+    addition: 'Addition',
+    subtraction: 'Subtraction',
+    mastery: 'Mastery',
+    developing: 'Developing',
+    emerging: 'Emerging',
+    student: 'Student',
+    grade: 'Grade',
+    date: 'Date',
+    actions: 'Actions',
+    view: 'View',
+    edit: 'Edit',
+    delete: 'Delete',
+    noData: 'No data available',
+    loading: 'Loading...',
+    error: 'Error loading data',
+    search: 'Search',
+    filter: 'Filter',
+    addStudent: 'Add Student',
+    addAssessment: 'Add Assessment',
+    generateReport: 'Generate Report',
+    uploadData: 'Upload Data',
+    name: 'Name',
+    age: 'Age',
+    gender: 'Gender',
+    male: 'Male',
+    female: 'Female',
+    save: 'Save',
+    cancel: 'Cancel',
+    confirmDelete: 'Are you sure you want to delete this item?',
+    yes: 'Yes',
+    no: 'No',
+    success: 'Success',
+    successMessage: 'Operation completed successfully',
+    error: 'Error',
+    errorMessage: 'An error occurred',
+    requiredField: 'This field is required',
+    invalidFormat: 'Invalid format',
+    logout: 'Logout',
+    settings: 'Settings',
+    profile: 'Profile',
+    language: 'Language',
+    theme: 'Theme',
+    light: 'Light',
+    dark: 'Dark',
+    system: 'System',
+    help: 'Help',
+    about: 'About',
+    version: 'Version',
+    copyright: 'Copyright',
+    termsOfService: 'Terms of Service',
+    privacyPolicy: 'Privacy Policy',
+    contactUs: 'Contact Us',
+    feedback: 'Feedback',
+    reportIssue: 'Report Issue',
+    documentation: 'Documentation',
+    tutorial: 'Tutorial',
+    faq: 'FAQ',
+  },
+  fr: {
+    dashboard: 'Tableau de bord',
+    students: 'Élèves',
+    assessments: 'Évaluations',
+    reports: 'Rapports',
+    dataUpload: 'Importation de données',
+    welcome: 'Bienvenue sur le tableau de bord EGRA/EGMA',
+    recentAssessments: 'Évaluations récentes',
+    viewAll: 'Voir tout',
+    studentPerformance: 'Performance des élèves',
+    readingMetrics: 'Métriques de lecture',
+    mathMetrics: 'Métriques de mathématiques',
+    letterIdentification: 'Identification des lettres',
+    phonemeAwareness: 'Conscience phonémique',
+    readingFluency: 'Fluidité de lecture',
+    readingComprehension: 'Compréhension de lecture',
+    numberIdentification: 'Identification des nombres',
+    quantityDiscrimination: 'Discrimination des quantités',
+    missingNumber: 'Nombre manquant',
+    addition: 'Addition',
+    subtraction: 'Soustraction',
+    mastery: 'Maîtrise',
+    developing: 'En développement',
+    emerging: 'Émergent',
+    student: 'Élève',
+    grade: 'Niveau',
+    date: 'Date',
+    actions: 'Actions',
+    view: 'Voir',
+    edit: 'Modifier',
+    delete: 'Supprimer',
+    noData: 'Aucune donnée disponible',
+    loading: 'Chargement...',
+    error: 'Erreur de chargement des données',
+    search: 'Rechercher',
+    filter: 'Filtrer',
+    addStudent: 'Ajouter un élève',
+    addAssessment: 'Ajouter une évaluation',
+    generateReport: 'Générer un rapport',
+    uploadData: 'Importer des données',
+    name: 'Nom',
+    age: 'Âge',
+    gender: 'Genre',
+    male: 'Masculin',
+    female: 'Féminin',
+    save: 'Enregistrer',
+    cancel: 'Annuler',
+    confirmDelete: 'Êtes-vous sûr de vouloir supprimer cet élément ?',
+    yes: 'Oui',
+    no: 'Non',
+    success: 'Succès',
+    successMessage: 'Opération terminée avec succès',
+    error: 'Erreur',
+    errorMessage: 'Une erreur est survenue',
+    requiredField: 'Ce champ est obligatoire',
+    invalidFormat: 'Format invalide',
+    logout: 'Déconnexion',
+    settings: 'Paramètres',
+    profile: 'Profil',
+    language: 'Langue',
+    theme: 'Thème',
+    light: 'Clair',
+    dark: 'Sombre',
+    system: 'Système',
+    help: 'Aide',
+    about: 'À propos',
+    version: 'Version',
+    copyright: 'Droits d\'auteur',
+    termsOfService: 'Conditions d\'utilisation',
+    privacyPolicy: 'Politique de confidentialité',
+    contactUs: 'Contactez-nous',
+    feedback: 'Commentaires',
+    reportIssue: 'Signaler un problème',
+    documentation: 'Documentation',
+    tutorial: 'Tutoriel',
+    faq: 'FAQ',
+  },
 };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
-  const [language, setLanguage] = useState<Language>("fr");
+  const [language, setLanguage] = useState<'en' | 'fr'>('fr');
 
   const t = (key: string): string => {
-    return translations[key]?.[language] || key;
+    return translations[language][key as keyof typeof translations.en] || key;
   };
 
   return (
-    <LanguageContext.Provider value={{ 
-      language, 
-      setLanguage,
-      translations,
-      t
-    }}>
+    <LanguageContext.Provider value={{ language, setLanguage, t }}>
       {children}
     </LanguageContext.Provider>
   );
 };
 
-export const useLanguage = () => {
+export const useLanguage = (): LanguageContextType => {
   const context = useContext(LanguageContext);
   if (context === undefined) {
-    throw new Error("useLanguage must be used within a LanguageProvider");
+    throw new Error('useLanguage must be used within a LanguageProvider');
   }
   return context;
 };

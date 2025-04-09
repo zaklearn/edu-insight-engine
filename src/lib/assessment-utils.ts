@@ -1,9 +1,8 @@
-
 import { 
   AssessmentData, 
   InterpretationThresholds, 
   RuleBasedInterpretation, 
-  sampleThresholds,
+  DEFAULT_THRESHOLDS,
   SkillLevel
 } from "@/types";
 
@@ -75,11 +74,10 @@ export function getSkillMessage(
 
 export function generateRuleBasedInterpretation(
   assessment: AssessmentData,
-  thresholds: InterpretationThresholds = sampleThresholds
+  thresholds: InterpretationThresholds = DEFAULT_THRESHOLDS
 ): RuleBasedInterpretation {
   const { egra, egma } = assessment;
   
-  // Process each metric
   const letterIdentificationLevel = getSkillLevel(egra.letterIdentification, thresholds.letterIdentification);
   const phonemeAwarenessLevel = getSkillLevel(egra.phonemeAwareness, thresholds.phonemeAwareness);
   const readingFluencyLevel = getSkillLevel(egra.readingFluency, thresholds.readingFluency);
@@ -91,7 +89,6 @@ export function generateRuleBasedInterpretation(
   const additionLevel = getSkillLevel(egma.addition, thresholds.addition);
   const subtractionLevel = getSkillLevel(egma.subtraction, thresholds.subtraction);
   
-  // Create skill level objects with messages
   const letterIdentification: SkillLevel = {
     level: letterIdentificationLevel,
     message: getSkillMessage('letterIdentification', letterIdentificationLevel, egra.letterIdentification)
@@ -137,7 +134,6 @@ export function generateRuleBasedInterpretation(
     message: getSkillMessage('subtraction', subtractionLevel, egma.subtraction)
   };
   
-  // Generate summary messages
   const readingLevels = [letterIdentificationLevel, phonemeAwarenessLevel, readingFluencyLevel, readingComprehensionLevel];
   const mathLevels = [numberIdentificationLevel, quantityDiscriminationLevel, missingNumberLevel, additionLevel, subtractionLevel];
   
@@ -230,12 +226,9 @@ Fournis une interprétation globale détaillée en français, en expliquant l'im
 `;
 }
 
-// Placeholder for LLM integration
 export async function generateLLMInterpretation(prompt: string): Promise<string> {
-  // In a real implementation, this would call the local LLM
   console.log("Generating interpretation with prompt:", prompt);
   
-  // Since we don't have a real LLM integration yet, return a placeholder response
   return `
 ## Interprétation détaillée des résultats EGRA/EGMA
 
