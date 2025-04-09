@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import Students from "./pages/Students";
 import Assessments from "./pages/Assessments";
 import Reports from "./pages/Reports";
+import DataUpload from "./pages/DataUpload";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,7 @@ const App = () => (
           <Route path="/students" element={<Students />} />
           <Route path="/assessments" element={<Assessments />} />
           <Route path="/reports" element={<Reports />} />
+          <Route path="/data-upload" element={<DataUpload />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
