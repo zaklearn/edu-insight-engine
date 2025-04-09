@@ -9,6 +9,7 @@ interface DataContextType {
   addStudents: (newStudents: Student[]) => void;
   addAssessments: (newAssessments: AssessmentData[]) => void;
   importData: (data: { students: Student[], assessments: AssessmentData[] }) => void;
+  replaceData: (data: { students: Student[], assessments: AssessmentData[] }) => void;
   resetData: () => void;
 }
 
@@ -57,6 +58,15 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     addAssessments(data.assessments);
   };
 
+  const replaceData = (data: { students: Student[], assessments: AssessmentData[] }) => {
+    setStudents(data.students);
+    setAssessments(data.assessments);
+    toast({
+      title: "Données remplacées",
+      description: `Les données ont été complètement remplacées avec ${data.students.length} élèves et ${data.assessments.length} évaluations.`
+    });
+  };
+
   const resetData = () => {
     setStudents([]);
     setAssessments([]);
@@ -73,6 +83,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       addStudents, 
       addAssessments, 
       importData,
+      replaceData,
       resetData
     }}>
       {children}

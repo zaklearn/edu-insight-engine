@@ -20,7 +20,7 @@ const Index = () => {
         <TabsList>
           <TabsTrigger value="dashboard">{t("dashboard")}</TabsTrigger>
           <TabsTrigger value="students">{t("students")}</TabsTrigger>
-          <TabsTrigger value="assessment">{t("assessment")}</TabsTrigger>
+          <TabsTrigger value="assessment">{t("assessments")}</TabsTrigger>
         </TabsList>
         
         <TabsContent value="dashboard">

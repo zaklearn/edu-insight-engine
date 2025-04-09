@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 type LanguageContextType = {
@@ -40,7 +41,7 @@ const translations = {
     delete: 'Delete',
     noData: 'No data available',
     loading: 'Loading...',
-    error: 'Error loading data',
+    errorLoading: 'Error loading data',
     search: 'Search',
     filter: 'Filter',
     addStudent: 'Add Student',
@@ -59,7 +60,7 @@ const translations = {
     no: 'No',
     success: 'Success',
     successMessage: 'Operation completed successfully',
-    error: 'Error',
+    errorTitle: 'Error',
     errorMessage: 'An error occurred',
     requiredField: 'This field is required',
     invalidFormat: 'Invalid format',
@@ -83,6 +84,10 @@ const translations = {
     documentation: 'Documentation',
     tutorial: 'Tutorial',
     faq: 'FAQ',
+    noAssessmentAvailable: 'No assessment available',
+    importData: 'Import Data',
+    replaceData: 'Replace Data',
+    keepData: 'Keep Existing Data'
   },
   fr: {
     dashboard: 'Tableau de bord',
@@ -117,7 +122,7 @@ const translations = {
     delete: 'Supprimer',
     noData: 'Aucune donnée disponible',
     loading: 'Chargement...',
-    error: 'Erreur de chargement des données',
+    errorLoading: 'Erreur de chargement des données',
     search: 'Rechercher',
     filter: 'Filtrer',
     addStudent: 'Ajouter un élève',
@@ -136,7 +141,7 @@ const translations = {
     no: 'Non',
     success: 'Succès',
     successMessage: 'Opération terminée avec succès',
-    error: 'Erreur',
+    errorTitle: 'Erreur',
     errorMessage: 'Une erreur est survenue',
     requiredField: 'Ce champ est obligatoire',
     invalidFormat: 'Format invalide',
@@ -160,6 +165,10 @@ const translations = {
     documentation: 'Documentation',
     tutorial: 'Tutoriel',
     faq: 'FAQ',
+    noAssessmentAvailable: 'Aucune évaluation disponible',
+    importData: 'Importer des données',
+    replaceData: 'Remplacer les données',
+    keepData: 'Conserver les données existantes'
   },
 };
 

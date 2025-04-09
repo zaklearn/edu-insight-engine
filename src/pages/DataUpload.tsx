@@ -1,3 +1,4 @@
+
 import { useState, useRef } from "react";
 import Layout from "@/components/Layout";
 import { read, utils } from "xlsx";
@@ -22,7 +23,18 @@ import {
 } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { useData } from "@/contexts/DataContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Student, AssessmentData } from "@/types";
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface ColumnMapping {
   name: string;
@@ -61,9 +73,11 @@ const DataUpload = () => {
   const [processedData, setProcessedData] = useState<AssessmentData[]>([]);
   const [processedStudents, setProcessedStudents] = useState<Student[]>([]);
   const [previewData, setPreviewData] = useState<any[]>([]);
+  const [showImportDialog, setShowImportDialog] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
-  const { importData } = useData();
+  const { importData, replaceData, students } = useData();
+  const { t } = useLanguage();
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -97,19 +111,19 @@ const DataUpload = () => {
           }));
           
           toast({
-            title: "Fichier chargé avec succès",
+            title: t("success"),
             description: `${dataRows.length} lignes de données trouvées`,
           });
         } else {
           toast({
-            title: "Erreur",
+            title: t("errorTitle"),
             description: "Le fichier ne contient pas de données valides",
             variant: "destructive",
           });
         }
       } catch (error) {
         toast({
-          title: "Erreur de lecture du fichier",
+          title: t("errorTitle"),
           description: "Veuillez vérifier que le fichier est un fichier Excel valide",
           variant: "destructive",
         });
@@ -193,17 +207,13 @@ const DataUpload = () => {
       setProcessedData(assessments);
       
       toast({
-        title: "Données traitées avec succès",
+        title: t("success"),
         description: `${assessments.length} enregistrements générés`,
       });
-
-      // Log the processed data
-      console.log("Processed students:", students);
-      console.log("Processed assessments:", assessments);
       
     } catch (error) {
       toast({
-        title: "Erreur de traitement",
+        title: t("errorTitle"),
         description: "Une erreur s'est produite lors du traitement des données",
         variant: "destructive",
       });
@@ -211,10 +221,10 @@ const DataUpload = () => {
     }
   };
 
-  const saveData = () => {
+  const saveData = (replace: boolean) => {
     if (processedData.length === 0) {
       toast({
-        title: "Aucune donnée à enregistrer",
+        title: t("errorTitle"),
         description: "Veuillez d'abord traiter les données.",
         variant: "destructive",
       });
@@ -222,26 +232,36 @@ const DataUpload = () => {
     }
 
     try {
-      // Import the processed data to our context
-      importData({
+      const data = {
         students: processedStudents,
         assessments: processedData
-      });
+      };
       
-      toast({
-        title: "Données enregistrées",
-        description: `${processedData.length} enregistrements ont été ajoutés à l'application`,
-      });
+      if (replace) {
+        replaceData(data);
+      } else {
+        importData(data);
+      }
       
       // Reset the form after successful import
       resetForm();
+      setShowImportDialog(false);
     } catch (error) {
       toast({
-        title: "Erreur d'enregistrement",
+        title: t("errorTitle"),
         description: "Une erreur s'est produite lors de l'enregistrement des données",
         variant: "destructive",
       });
       console.error("Error saving data:", error);
+    }
+  };
+
+  const handleSaveClick = () => {
+    if (students.length > 0) {
+      setShowImportDialog(true);
+    } else {
+      // If no existing data, just save without asking
+      saveData(false); 
     }
   };
 
@@ -274,7 +294,7 @@ const DataUpload = () => {
   return (
     <Layout>
       <div className="space-y-6">
-        <h1 className="text-3xl font-bold">Importation de Données</h1>
+        <h1 className="text-3xl font-bold">{t("dataUpload")}</h1>
         
         <Card>
           <CardHeader>
@@ -575,7 +595,7 @@ const DataUpload = () => {
                 <div className="mt-6">
                   <h3 className="text-lg font-semibold mb-2">Résumé du traitement</h3>
                   <p>{processedData.length} enregistrements ont été générés et sont prêts à être utilisés.</p>
-                  <Button onClick={saveData} className="mt-4">
+                  <Button onClick={handleSaveClick} className="mt-4">
                     Enregistrer les données dans l'application
                   </Button>
                 </div>
@@ -584,6 +604,26 @@ const DataUpload = () => {
           </Card>
         )}
       </div>
+
+      <AlertDialog open={showImportDialog} onOpenChange={setShowImportDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("importData")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              Des données existent déjà. Voulez-vous remplacer toutes les données existantes ou ajouter ces nouvelles données aux données existantes?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+            <AlertDialogAction onClick={() => saveData(false)}>
+              {t("keepData")}
+            </AlertDialogAction>
+            <AlertDialogAction onClick={() => saveData(true)} className="bg-destructive text-destructive-foreground">
+              {t("replaceData")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Layout>
   );
 };
