@@ -6,19 +6,20 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Search, UserPlus, SortAsc, SortDesc, ChevronRight } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { sampleStudents } from "@/types";
+import { useData } from "@/contexts/DataContext";
 
 const StudentList = () => {
+  const { students } = useData();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortField, setSortField] = useState<string>("name");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [selectedGrade, setSelectedGrade] = useState<string>("all");
 
   // Get unique grades
-  const grades = Array.from(new Set(sampleStudents.map(s => s.grade)));
+  const grades = Array.from(new Set(students.map(s => s.grade)));
 
   // Filter and sort students
-  const filteredStudents = sampleStudents
+  const filteredStudents = students
     .filter(student => 
       (selectedGrade === "all" || student.grade === selectedGrade) &&
       (student.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -181,7 +182,7 @@ const StudentList = () => {
         </div>
         
         <div className="mt-4 text-sm text-gray-500 flex justify-between items-center">
-          <span>Affichage de {filteredStudents.length} élèves sur {sampleStudents.length}</span>
+          <span>Affichage de {filteredStudents.length} élèves sur {students.length}</span>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" disabled>Précédent</Button>
             <Button variant="outline" size="sm" disabled>Suivant</Button>

@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import Layout from "@/components/Layout";
 import { read, utils } from "xlsx";
@@ -22,6 +21,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
+import { useData } from "@/contexts/DataContext";
+import { Student, AssessmentData } from "@/types";
 
 interface ColumnMapping {
   name: string;
@@ -47,20 +48,22 @@ const DataUpload = () => {
     grade: "",
     age: "",
     gender: "",
-    letterIdentification: "",
-    phonemeAwareness: "",
-    readingFluency: "",
-    readingComprehension: "",
-    numberIdentification: "",
-    quantityDiscrimination: "",
-    missingNumber: "",
-    addition: "",
-    subtraction: "",
+    letterIdentification: "not_mapped",
+    phonemeAwareness: "not_mapped",
+    readingFluency: "not_mapped",
+    readingComprehension: "not_mapped",
+    numberIdentification: "not_mapped",
+    quantityDiscrimination: "not_mapped",
+    missingNumber: "not_mapped",
+    addition: "not_mapped",
+    subtraction: "not_mapped",
   });
-  const [processedData, setProcessedData] = useState<any[]>([]);
+  const [processedData, setProcessedData] = useState<AssessmentData[]>([]);
+  const [processedStudents, setProcessedStudents] = useState<Student[]>([]);
   const [previewData, setPreviewData] = useState<any[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  const { importData } = useData();
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -137,9 +140,14 @@ const DataUpload = () => {
       }
 
       // Process data according to mapping
-      const processed = excelData.map((row: any[]) => {
-        const student = {
-          id: Math.random().toString(36).substring(2, 11), // Generate random ID
+      const students: Student[] = [];
+      const assessments: AssessmentData[] = [];
+      
+      excelData.forEach((row: any[]) => {
+        const studentId = Math.random().toString(36).substring(2, 11); // Generate random ID
+        
+        const student: Student = {
+          id: studentId,
           name: row[columns.indexOf(mapping.name)],
           grade: row[columns.indexOf(mapping.grade)],
           age: Number(row[columns.indexOf(mapping.age)]),
@@ -172,23 +180,26 @@ const DataUpload = () => {
             ? Number(row[columns.indexOf(mapping.subtraction)]) : 0,
         };
 
-        return {
+        students.push(student);
+        assessments.push({
           student,
           date,
           egra,
           egma
-        };
+        });
       });
 
-      setProcessedData(processed);
+      setProcessedStudents(students);
+      setProcessedData(assessments);
       
       toast({
         title: "Données traitées avec succès",
-        description: `${processed.length} enregistrements générés`,
+        description: `${assessments.length} enregistrements générés`,
       });
 
-      // Here you would typically save the data to your storage
-      console.log("Processed data:", processed);
+      // Log the processed data
+      console.log("Processed students:", students);
+      console.log("Processed assessments:", assessments);
       
     } catch (error) {
       toast({
@@ -200,6 +211,40 @@ const DataUpload = () => {
     }
   };
 
+  const saveData = () => {
+    if (processedData.length === 0) {
+      toast({
+        title: "Aucune donnée à enregistrer",
+        description: "Veuillez d'abord traiter les données.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // Import the processed data to our context
+      importData({
+        students: processedStudents,
+        assessments: processedData
+      });
+      
+      toast({
+        title: "Données enregistrées",
+        description: `${processedData.length} enregistrements ont été ajoutés à l'application`,
+      });
+      
+      // Reset the form after successful import
+      resetForm();
+    } catch (error) {
+      toast({
+        title: "Erreur d'enregistrement",
+        description: "Une erreur s'est produite lors de l'enregistrement des données",
+        variant: "destructive",
+      });
+      console.error("Error saving data:", error);
+    }
+  };
+
   const resetForm = () => {
     setExcelData([]);
     setColumns([]);
@@ -208,17 +253,18 @@ const DataUpload = () => {
       grade: "",
       age: "",
       gender: "",
-      letterIdentification: "",
-      phonemeAwareness: "",
-      readingFluency: "",
-      readingComprehension: "",
-      numberIdentification: "",
-      quantityDiscrimination: "",
-      missingNumber: "",
-      addition: "",
-      subtraction: "",
+      letterIdentification: "not_mapped",
+      phonemeAwareness: "not_mapped",
+      readingFluency: "not_mapped",
+      readingComprehension: "not_mapped",
+      numberIdentification: "not_mapped",
+      quantityDiscrimination: "not_mapped",
+      missingNumber: "not_mapped",
+      addition: "not_mapped",
+      subtraction: "not_mapped",
     });
     setProcessedData([]);
+    setProcessedStudents([]);
     setPreviewData([]);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -529,6 +575,9 @@ const DataUpload = () => {
                 <div className="mt-6">
                   <h3 className="text-lg font-semibold mb-2">Résumé du traitement</h3>
                   <p>{processedData.length} enregistrements ont été générés et sont prêts à être utilisés.</p>
+                  <Button onClick={saveData} className="mt-4">
+                    Enregistrer les données dans l'application
+                  </Button>
                 </div>
               )}
             </CardContent>

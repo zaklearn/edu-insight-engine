@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -6,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { BookOpen, Calculator, AlertCircle, Info } from "lucide-react";
-import { sampleAssessments, sampleStudents } from "@/types";
+import { useData } from "@/contexts/DataContext";
 
 interface ChartData {
   name: string;
@@ -14,18 +13,13 @@ interface ChartData {
   EGMA: number;
 }
 
-// Calculate average scores for the sample data
-const calculateAverages = (studentIds: string[] = []) => {
-  const filteredAssessments = studentIds.length > 0 
-    ? sampleAssessments.filter(assessment => studentIds.includes(assessment.student.id))
-    : sampleAssessments;
-  
-  if (filteredAssessments.length === 0) return [];
+const calculateAveragesFromAssessments = (assessments: any[]) => {
+  if (assessments.length === 0) return [];
   
   // Aggregate by grade
   const gradeMap = new Map<string, { count: number, egra: number, egma: number }>();
   
-  filteredAssessments.forEach(assessment => {
+  assessments.forEach(assessment => {
     const grade = assessment.student.grade;
     const egra = (assessment.egra.letterIdentification + assessment.egra.phonemeAwareness + 
                  assessment.egra.readingFluency + assessment.egra.readingComprehension) / 4;
@@ -58,20 +52,23 @@ const calculateAverages = (studentIds: string[] = []) => {
 };
 
 const Dashboard = () => {
+  const { students, assessments } = useData();
   const [selectedClass, setSelectedClass] = useState<string>("all");
-  const averages = calculateAverages(
-    selectedClass === "all" ? [] : sampleAssessments
-      .filter(a => a.student.grade === selectedClass)
-      .map(a => a.student.id)
-  );
   
   // Get unique grades
-  const grades = Array.from(new Set(sampleStudents.map(s => s.grade)));
+  const grades = Array.from(new Set(students.map(s => s.grade)));
+  
+  const filteredAssessments = selectedClass === "all" 
+    ? assessments 
+    : assessments.filter(a => a.student.grade === selectedClass);
+  
+  // Calculate averages based on filtered assessments
+  const averages = calculateAveragesFromAssessments(filteredAssessments);
   
   // Count students by grade
   const studentsByGrade = grades.map(grade => ({
     name: grade,
-    Students: sampleStudents.filter(s => s.grade === grade).length
+    Students: students.filter(s => s.grade === grade).length
   }));
   
   return (
@@ -144,8 +141,8 @@ const Dashboard = () => {
           <CardContent>
             <div className="text-3xl font-bold text-gray-700">
               {selectedClass === "all" 
-                ? sampleStudents.length 
-                : sampleStudents.filter(s => s.grade === selectedClass).length}
+                ? students.length 
+                : students.filter(s => s.grade === selectedClass).length}
             </div>
             <p className="text-sm text-gray-500 mt-1">
               {selectedClass === "all" ? "Nombre total d'élèves" : `Élèves en ${selectedClass}`}
