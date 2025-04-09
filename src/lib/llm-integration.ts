@@ -123,6 +123,10 @@ export const generateText = async (prompt: string, modelId?: string) => {
   }
 };
 
-export const isWebGPUAvailable = () => {
-  return navigator.gpu !== undefined;
+// Fix for TypeScript error - properly checking for WebGPU support
+export const isWebGPUAvailable = (): boolean => {
+  // Use type assertion to access the experimental gpu property
+  return typeof navigator !== 'undefined' && 
+         'gpu' in navigator && 
+         typeof (navigator as any).gpu !== 'undefined';
 };
