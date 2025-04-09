@@ -1,3 +1,4 @@
+
 import { useState, useRef } from "react";
 import Layout from "@/components/Layout";
 import { read, utils } from "xlsx";
@@ -148,18 +149,27 @@ const DataUpload = () => {
         const date = new Date().toISOString().split('T')[0];
 
         const egra = {
-          letterIdentification: mapping.letterIdentification ? Number(row[columns.indexOf(mapping.letterIdentification)]) : 0,
-          phonemeAwareness: mapping.phonemeAwareness ? Number(row[columns.indexOf(mapping.phonemeAwareness)]) : 0,
-          readingFluency: mapping.readingFluency ? Number(row[columns.indexOf(mapping.readingFluency)]) : 0,
-          readingComprehension: mapping.readingComprehension ? Number(row[columns.indexOf(mapping.readingComprehension)]) : 0,
+          letterIdentification: mapping.letterIdentification && mapping.letterIdentification !== "not_mapped" 
+            ? Number(row[columns.indexOf(mapping.letterIdentification)]) : 0,
+          phonemeAwareness: mapping.phonemeAwareness && mapping.phonemeAwareness !== "not_mapped"
+            ? Number(row[columns.indexOf(mapping.phonemeAwareness)]) : 0,
+          readingFluency: mapping.readingFluency && mapping.readingFluency !== "not_mapped"
+            ? Number(row[columns.indexOf(mapping.readingFluency)]) : 0,
+          readingComprehension: mapping.readingComprehension && mapping.readingComprehension !== "not_mapped"
+            ? Number(row[columns.indexOf(mapping.readingComprehension)]) : 0,
         };
 
         const egma = {
-          numberIdentification: mapping.numberIdentification ? Number(row[columns.indexOf(mapping.numberIdentification)]) : 0,
-          quantityDiscrimination: mapping.quantityDiscrimination ? Number(row[columns.indexOf(mapping.quantityDiscrimination)]) : 0,
-          missingNumber: mapping.missingNumber ? Number(row[columns.indexOf(mapping.missingNumber)]) : 0,
-          addition: mapping.addition ? Number(row[columns.indexOf(mapping.addition)]) : 0,
-          subtraction: mapping.subtraction ? Number(row[columns.indexOf(mapping.subtraction)]) : 0,
+          numberIdentification: mapping.numberIdentification && mapping.numberIdentification !== "not_mapped"
+            ? Number(row[columns.indexOf(mapping.numberIdentification)]) : 0,
+          quantityDiscrimination: mapping.quantityDiscrimination && mapping.quantityDiscrimination !== "not_mapped"
+            ? Number(row[columns.indexOf(mapping.quantityDiscrimination)]) : 0,
+          missingNumber: mapping.missingNumber && mapping.missingNumber !== "not_mapped"
+            ? Number(row[columns.indexOf(mapping.missingNumber)]) : 0,
+          addition: mapping.addition && mapping.addition !== "not_mapped"
+            ? Number(row[columns.indexOf(mapping.addition)]) : 0,
+          subtraction: mapping.subtraction && mapping.subtraction !== "not_mapped"
+            ? Number(row[columns.indexOf(mapping.subtraction)]) : 0,
         };
 
         return {
@@ -353,7 +363,7 @@ const DataUpload = () => {
                       <SelectValue placeholder="Sélectionner une colonne" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Non mappé</SelectItem>
+                      <SelectItem value="not_mapped">Non mappé</SelectItem>
                       {columns.map((col) => (
                         <SelectItem key={col} value={col}>{col}</SelectItem>
                       ))}
@@ -371,7 +381,7 @@ const DataUpload = () => {
                       <SelectValue placeholder="Sélectionner une colonne" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Non mappé</SelectItem>
+                      <SelectItem value="not_mapped">Non mappé</SelectItem>
                       {columns.map((col) => (
                         <SelectItem key={col} value={col}>{col}</SelectItem>
                       ))}
@@ -389,7 +399,7 @@ const DataUpload = () => {
                       <SelectValue placeholder="Sélectionner une colonne" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Non mappé</SelectItem>
+                      <SelectItem value="not_mapped">Non mappé</SelectItem>
                       {columns.map((col) => (
                         <SelectItem key={col} value={col}>{col}</SelectItem>
                       ))}
@@ -407,7 +417,7 @@ const DataUpload = () => {
                       <SelectValue placeholder="Sélectionner une colonne" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Non mappé</SelectItem>
+                      <SelectItem value="not_mapped">Non mappé</SelectItem>
                       {columns.map((col) => (
                         <SelectItem key={col} value={col}>{col}</SelectItem>
                       ))}
@@ -429,7 +439,7 @@ const DataUpload = () => {
                       <SelectValue placeholder="Sélectionner une colonne" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Non mappé</SelectItem>
+                      <SelectItem value="not_mapped">Non mappé</SelectItem>
                       {columns.map((col) => (
                         <SelectItem key={col} value={col}>{col}</SelectItem>
                       ))}
@@ -447,7 +457,7 @@ const DataUpload = () => {
                       <SelectValue placeholder="Sélectionner une colonne" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Non mappé</SelectItem>
+                      <SelectItem value="not_mapped">Non mappé</SelectItem>
                       {columns.map((col) => (
                         <SelectItem key={col} value={col}>{col}</SelectItem>
                       ))}
@@ -465,7 +475,7 @@ const DataUpload = () => {
                       <SelectValue placeholder="Sélectionner une colonne" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Non mappé</SelectItem>
+                      <SelectItem value="not_mapped">Non mappé</SelectItem>
                       {columns.map((col) => (
                         <SelectItem key={col} value={col}>{col}</SelectItem>
                       ))}
@@ -483,7 +493,7 @@ const DataUpload = () => {
                       <SelectValue placeholder="Sélectionner une colonne" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Non mappé</SelectItem>
+                      <SelectItem value="not_mapped">Non mappé</SelectItem>
                       {columns.map((col) => (
                         <SelectItem key={col} value={col}>{col}</SelectItem>
                       ))}
@@ -501,7 +511,7 @@ const DataUpload = () => {
                       <SelectValue placeholder="Sélectionner une colonne" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Non mappé</SelectItem>
+                      <SelectItem value="not_mapped">Non mappé</SelectItem>
                       {columns.map((col) => (
                         <SelectItem key={col} value={col}>{col}</SelectItem>
                       ))}
