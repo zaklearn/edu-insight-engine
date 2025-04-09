@@ -1,12 +1,20 @@
 
 import { ReactNode } from "react";
 import { Card } from "@/components/ui/card";
+import { Link, useLocation } from "react-router-dom";
 
 interface LayoutProps {
   children: ReactNode;
 }
 
 const Layout = ({ children }: LayoutProps) => {
+  const location = useLocation();
+  
+  // Helper function to determine if a link is active
+  const isActive = (path: string) => {
+    return location.pathname === path;
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
       <header className="border-b border-gray-200 bg-white shadow-sm">
@@ -18,18 +26,30 @@ const Layout = ({ children }: LayoutProps) => {
             <h1 className="text-xl font-bold">EduInsight</h1>
           </div>
           <nav className="hidden md:flex space-x-6">
-            <a href="/" className="text-edu-primary hover:text-edu-dark font-medium transition-colors">
+            <Link 
+              to="/" 
+              className={isActive("/") ? "text-edu-primary font-medium" : "text-gray-600 hover:text-edu-primary font-medium transition-colors"}
+            >
               Tableau de bord
-            </a>
-            <a href="/students" className="text-gray-600 hover:text-edu-primary font-medium transition-colors">
+            </Link>
+            <Link 
+              to="/students" 
+              className={isActive("/students") ? "text-edu-primary font-medium" : "text-gray-600 hover:text-edu-primary font-medium transition-colors"}
+            >
               Élèves
-            </a>
-            <a href="/assessments" className="text-gray-600 hover:text-edu-primary font-medium transition-colors">
+            </Link>
+            <Link 
+              to="/assessments" 
+              className={isActive("/assessments") ? "text-edu-primary font-medium" : "text-gray-600 hover:text-edu-primary font-medium transition-colors"}
+            >
               Évaluations
-            </a>
-            <a href="/reports" className="text-gray-600 hover:text-edu-primary font-medium transition-colors">
+            </Link>
+            <Link 
+              to="/reports" 
+              className={isActive("/reports") ? "text-edu-primary font-medium" : "text-gray-600 hover:text-edu-primary font-medium transition-colors"}
+            >
               Rapports
-            </a>
+            </Link>
           </nav>
           <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
             <span className="text-gray-600 font-medium">A</span>
