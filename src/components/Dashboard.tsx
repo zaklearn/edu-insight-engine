@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -87,6 +88,18 @@ const Dashboard = () => {
     name: grade,
     Students: students.filter(s => s.grade === grade).length
   }));
+
+  // Find students that may need attention (below 50% in any major category)
+  const studentsToWatch = assessments
+    .filter(assessment => {
+      const egraAvg = (assessment.egra.letterIdentification + assessment.egra.phonemeAwareness + 
+                       assessment.egra.readingFluency + assessment.egra.readingComprehension) / 4;
+      const egmaAvg = (assessment.egma.numberIdentification + assessment.egma.quantityDiscrimination + 
+                      assessment.egma.missingNumber + assessment.egma.addition + assessment.egma.subtraction) / 5;
+      
+      return egraAvg < 50 || egmaAvg < 50;
+    })
+    .slice(0, 2); // Just show the first 2 for UI purposes
   
   return (
     <div className="space-y-8">
@@ -249,26 +262,32 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {sampleAssessments.slice(0, 2).map((assessment) => (
-                <div key={assessment.student.id} className="p-4 border rounded-lg flex flex-col gap-2">
-                  <div className="flex justify-between items-center">
-                    <h4 className="font-medium">{assessment.student.name}</h4>
-                    <span className="text-xs text-gray-500">Classe: {assessment.student.grade}</span>
+              {studentsToWatch.length > 0 ? (
+                studentsToWatch.map((assessment) => (
+                  <div key={assessment.student.id} className="p-4 border rounded-lg flex flex-col gap-2">
+                    <div className="flex justify-between items-center">
+                      <h4 className="font-medium">{assessment.student.name}</h4>
+                      <span className="text-xs text-gray-500">Classe: {assessment.student.grade}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">EGRA: {Math.round((assessment.egra.letterIdentification + assessment.egra.phonemeAwareness + 
+                        assessment.egra.readingFluency + assessment.egra.readingComprehension) / 4)}%</span>
+                      <span className="text-gray-600">EGMA: {Math.round((assessment.egma.numberIdentification + assessment.egma.quantityDiscrimination + 
+                        assessment.egma.missingNumber + assessment.egma.addition + assessment.egma.subtraction) / 5)}%</span>
+                    </div>
+                    <div className="text-sm text-amber-600">
+                      Nécessite un suivi personnalisé en lecture fluide
+                    </div>
+                    <Button variant="outline" size="sm" className="w-full mt-2">
+                      Voir l'évaluation complète
+                    </Button>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">EGRA: {Math.round((assessment.egra.letterIdentification + assessment.egra.phonemeAwareness + 
-                      assessment.egra.readingFluency + assessment.egra.readingComprehension) / 4)}%</span>
-                    <span className="text-gray-600">EGMA: {Math.round((assessment.egma.numberIdentification + assessment.egma.quantityDiscrimination + 
-                      assessment.egma.missingNumber + assessment.egma.addition + assessment.egma.subtraction) / 5)}%</span>
-                  </div>
-                  <div className="text-sm text-amber-600">
-                    Nécessite un suivi personnalisé en lecture fluide
-                  </div>
-                  <Button variant="outline" size="sm" className="w-full mt-2">
-                    Voir l'évaluation complète
-                  </Button>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p className="text-center py-4 text-gray-500">
+                  Aucun élève nécessitant une attention particulière
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>
